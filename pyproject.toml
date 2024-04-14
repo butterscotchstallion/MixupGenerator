@@ -1,0 +1,22 @@
+[project]
+name = "mixup-generator"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "Butterscotch Stallion", email = "mistborn+github@fastmail.com"},
+]
+dependencies = [
+    "pytest>=8.1.1",
+    "loguru>=0.7.2",
+]
+requires-python = ">=3.12"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true
