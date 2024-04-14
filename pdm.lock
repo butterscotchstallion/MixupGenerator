@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = ["cross_platform", "inherit_metadata"]
 lock_version = "4.4.1"
-content_hash = "sha256:918dbdb341a63a67620e7d848437ace97b6bc5cfd9ad7f8b70afc026af3d253b"
+content_hash = "sha256:6ffa8db98651c30012bf22a247254f05668daf2ca8cef2816b239167608ec7b6"
 
 [[package]]
 name = "colorama"
@@ -54,6 +54,15 @@ groups = ["default"]
 files = [
     {file = "packaging-24.0-py3-none-any.whl", hash = "sha256:2ddfb553fdf02fb784c234c7ba6ccc288296ceabec964ad2eae3777778130bc5"},
     {file = "packaging-24.0.tar.gz", hash = "sha256:eb82c5e3e56209074766e6885bb04b8c38a0c015d0a30036ebe7ece34c9989e9"},
+]
+
+[[package]]
+name = "peewee"
+version = "3.17.1"
+summary = "a little orm"
+groups = ["default"]
+files = [
+    {file = "peewee-3.17.1.tar.gz", hash = "sha256:e009ac4227c4fdc0058a56e822ad5987684f0a1fbb20fed577200785102581c3"},
 ]
 
 [[package]]

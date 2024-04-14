@@ -1,17 +1,10 @@
-"""
-- Given a set of teams with members, create a list of
-pairs where each member is from a different team
-- If there is a history generated, ensure that no pair
-generated has met up in the last month
-"""
-
-from mixup_generator.mixup_generator import MixupGenerator
+from mixup_generator.mixup_groups_generator import MixupGroupsGenerator
 from mixup_generator.mixup_team import MixupTeam
 from mixup_generator.mixup_team_member import MixupTeamMember
 
 
 def test_add_team():
-    generator = MixupGenerator()
+    generator = MixupGroupsGenerator()
     member_names: set[MixupTeamMember] = set(
         [
             MixupTeamMember(name="Professor Farnsworth"),
@@ -39,7 +32,7 @@ def test_get_pairs_from_teams():
     members without a pair
     3. Figure out what to do with odd numbers (one person has to meet up twice)
     """
-    generator = MixupGenerator()
+    generator = MixupGroupsGenerator()
     generator.add_team(
         MixupTeam(
             name="Bravo",

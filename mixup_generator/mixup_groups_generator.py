@@ -5,7 +5,14 @@ from mixup_generator.mixup_team import MixupTeam
 from mixup_generator.mixup_team_member import MixupTeamMember
 
 
-class MixupGenerator:
+class MixupGroupsGenerator:
+    """
+    - Given a set of teams with members, create a list of
+    pairs where each member is from a different team
+    - If there is a history generated, ensure that no pair
+    generated has met up in the last month
+    """
+
     teams: set[MixupTeam]
 
     def __init__(self):
