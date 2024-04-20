@@ -1,15 +1,15 @@
 from typing import Required, TypedDict, Unpack
 
-from mixup_generator.mixup_team_member import MixupTeamMember
+from mixup_generator.team_member import TeamMember
 
 
-class MixupTeamKeywords(TypedDict):
+class TeamKeywords(TypedDict):
     name: Required[str]
-    members: Required[set[MixupTeamMember]]
+    members: Required[set[TeamMember]]
 
 
-class MixupTeam:
-    def __init__(self, **kwargs: Unpack[MixupTeamKeywords]):
+class Team:
+    def __init__(self, **kwargs: Unpack[TeamKeywords]):
         self.name = kwargs["name"]
         self.members = kwargs["members"]
 

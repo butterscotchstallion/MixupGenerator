@@ -1,11 +1,11 @@
 from random import shuffle
 
 from mixup_generator.logger import logger
-from mixup_generator.mixup_team import MixupTeam
-from mixup_generator.mixup_team_member import MixupTeamMember
+from mixup_generator.team import Team
+from mixup_generator.team_member import TeamMember
 
 
-class MixupGroupsGenerator:
+class GroupsGenerator:
     """
     - Given a set of teams with members, create a list of
     pairs where each member is from a different team
@@ -13,12 +13,12 @@ class MixupGroupsGenerator:
     generated has met up in the last month
     """
 
-    teams: set[MixupTeam]
+    teams: set[Team]
 
     def __init__(self):
         self.teams = set([])
 
-    def add_team(self, team: MixupTeam) -> bool:
+    def add_team(self, team: Team) -> bool:
         if len(team.members) == 0:
             return False
         self.teams.add(team)
@@ -33,7 +33,7 @@ class MixupGroupsGenerator:
                 member_teams_map[member].add(team.name)
         return member_teams_map
 
-    def get_pairs(self) -> set[tuple[MixupTeamMember, MixupTeamMember]]:
+    def get_pairs(self) -> set[tuple[TeamMember, TeamMember]]:
         """
         Finds pairs of members that aren't from the same team until there
         are no members left.
@@ -41,7 +41,7 @@ class MixupGroupsGenerator:
         members = self.get_members_from_teams()
         shuffle(list(members))
 
-        pairs: set[tuple[MixupTeamMember, MixupTeamMember]] = set([])
+        pairs: set[tuple[TeamMember, TeamMember]] = set([])
         while len(members) > 0:
             pair_member_one = self.get_member_from_members(members)
             pair_member_two = self.get_member_from_members(members)
@@ -53,15 +53,13 @@ class MixupGroupsGenerator:
                 )
         return pairs
 
-    def get_member_from_members(
-        self, members: set[MixupTeamMember]
-    ) -> MixupTeamMember | None:
+    def get_member_from_members(self, members: set[TeamMember]) -> TeamMember | None:
         member = members.pop()
         if member:
             return member
 
-    def get_members_from_teams(self) -> set[MixupTeamMember]:
-        members: set[MixupTeamMember] = set([])
+    def get_members_from_teams(self) -> set[TeamMember]:
+        members: set[TeamMember] = set([])
         for team in self.teams:
             for member in team.members:
                 members.add(member)

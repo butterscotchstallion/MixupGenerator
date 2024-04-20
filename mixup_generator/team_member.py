@@ -1,16 +1,16 @@
 from typing import NotRequired, Required, TypedDict, Unpack
 
 
-class MixupTeamMemberKeywords(TypedDict):
+class TeamMemberKeywords(TypedDict):
     name: Required[str]
     username: NotRequired[str]
 
 
-class MixupTeamMember:
+class TeamMember:
     name: str
     username: str
 
-    def __init__(self, **kwargs: Unpack[MixupTeamMemberKeywords]):
+    def __init__(self, **kwargs: Unpack[TeamMemberKeywords]):
         self.name = kwargs["name"]
 
         if "username" in kwargs:

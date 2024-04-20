@@ -1,20 +1,20 @@
-from mixup_generator.mixup_groups_generator import MixupGroupsGenerator
-from mixup_generator.mixup_team import MixupTeam
-from mixup_generator.mixup_team_member import MixupTeamMember
+from mixup_generator.groups_generator import GroupsGenerator
+from mixup_generator.team import Team
+from mixup_generator.team_member import TeamMember
 
 
 def test_add_team():
-    generator = MixupGroupsGenerator()
-    member_names: set[MixupTeamMember] = set(
+    generator = GroupsGenerator()
+    member_names: set[TeamMember] = set(
         [
-            MixupTeamMember(name="Professor Farnsworth"),
-            MixupTeamMember(name="Toranga Leela"),
-            MixupTeamMember(name="Fry"),
-            MixupTeamMember(name="Zoidberg"),
+            TeamMember(name="Professor Farnsworth"),
+            TeamMember(name="Toranga Leela"),
+            TeamMember(name="Fry"),
+            TeamMember(name="Zoidberg"),
         ]
     )
 
-    team = MixupTeam(name="Alpha", members=member_names)
+    team = Team(name="Alpha", members=member_names)
     team_added = generator.add_team(team)
 
     assert team_added, "Team has no members"
@@ -32,29 +32,29 @@ def test_get_pairs_from_teams():
     members without a pair
     3. Figure out what to do with odd numbers (one person has to meet up twice)
     """
-    generator = MixupGroupsGenerator()
+    generator = GroupsGenerator()
     generator.add_team(
-        MixupTeam(
+        Team(
             name="Bravo",
             members=set(
                 [
-                    MixupTeamMember(name="Professor Farnsworth"),
-                    MixupTeamMember(name="Turanga Leela"),
-                    MixupTeamMember(name="Philip J. Fry"),
-                    MixupTeamMember(name="Doctor Zoidberg"),
+                    TeamMember(name="Professor Farnsworth"),
+                    TeamMember(name="Turanga Leela"),
+                    TeamMember(name="Philip J. Fry"),
+                    TeamMember(name="Doctor Zoidberg"),
                 ]
             ),
         )
     )
     generator.add_team(
-        MixupTeam(
+        Team(
             name="Charlie",
             members=set(
                 [
-                    MixupTeamMember(name="Lrrr"),
-                    MixupTeamMember(name="Bender Bending Rodriguez"),
-                    MixupTeamMember(name="Amy Wong"),
-                    MixupTeamMember(name="Hermes Conrad"),
+                    TeamMember(name="Lrrr"),
+                    TeamMember(name="Bender Bending Rodriguez"),
+                    TeamMember(name="Amy Wong"),
+                    TeamMember(name="Hermes Conrad"),
                 ]
             ),
         )
@@ -102,11 +102,11 @@ def test_generate_default_username():
         "Linda van Schoonhoven": "lschoonhoven",
     }
     members = [
-        MixupTeamMember(name="Jenny McNeal"),
-        MixupTeamMember(name="Scruffy Scruffington"),
-        MixupTeamMember(name="Fishy Joe Gilman"),
-        MixupTeamMember(name="Leo Wong"),
-        MixupTeamMember(name="Linda van Schoonhoven", username="custom_username"),
+        TeamMember(name="Jenny McNeal"),
+        TeamMember(name="Scruffy Scruffington"),
+        TeamMember(name="Fishy Joe Gilman"),
+        TeamMember(name="Leo Wong"),
+        TeamMember(name="Linda van Schoonhoven", username="custom_username"),
     ]
 
     for member in members:
