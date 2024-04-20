@@ -4,11 +4,11 @@ from sqlalchemy.orm import relationship
 from mixup_generator.db import Base
 
 
-class MixupMeetup(Base):
+class Meetings(Base):
     """
     Represents a Mixup Meeting between two or more members
 
-    mixup_meetings
+    meetings
     ===================
     id
     meeting_timestamp
@@ -23,7 +23,7 @@ class MixupMeetup(Base):
     updated_at
     """
 
-    __tablename__ = "mixup_meetings"
+    __tablename__ = "meetings"
     id = Column(Integer, primary_key=True)
     meeting_timestamp = Column(DateTime(timezone=True))
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -38,8 +38,8 @@ class MeetingAttendees(Base):
     linked to the meeting by the mixup_meeting id
     """
 
-    __tablename__ = "mixup_meetings"
+    __tablename__ = "meeting_attendees"
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
-    meeting_id = Column(Integer, ForeignKey("mixup_meetings.id"))
+    meeting_id = Column(Integer, ForeignKey("meetings.id"))
