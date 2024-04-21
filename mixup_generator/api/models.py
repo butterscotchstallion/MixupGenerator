@@ -2,7 +2,7 @@ from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String, f
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import expression
 
-from mixup_generator.db import Base
+from .db import Base
 
 
 class Meeting(Base):
@@ -17,6 +17,21 @@ class Meeting(Base):
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
     attendees = relationship("MeetingAttendee", back_populates="attendees")
+    meeting_location_id = relationship(
+        "MeetingLocation", back_populates="meeting_location"
+    )
+
+
+class MeetingLocation(Base):
+    """
+    Represents a meeting room
+    """
+
+    __tablename__ = "meeting_location"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
 
 
 class MeetingAttendee(Base):
@@ -33,7 +48,7 @@ class MeetingAttendee(Base):
     team_member_id = Column(Integer, ForeignKey("team_member.id"))
 
 
-class TeamMember:
+class TeamMember(Base):
     __tablename__ = "team_member"
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -44,7 +59,7 @@ class TeamMember:
     can_attend_multiple_meetings = Column(Boolean, server_default=expression.false())
 
 
-class Team:
+class Team(Base):
     __tablename__ = "team"
     id = Column(Integer, primary_key=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
@@ -53,7 +68,7 @@ class Team:
     active = Column(Boolean, server_default=expression.true())
 
 
-class TeamMembers:
+class TeamTeamMembers(Base):
     """
     Represents team members belonging to one or more team
     """

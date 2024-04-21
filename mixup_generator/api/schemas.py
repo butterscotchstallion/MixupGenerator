@@ -6,19 +6,11 @@ meeting_attendee
 """
 
 
-class MeetingAttendeeBase(BaseModel):
-    meeting_id: int
-    created_at: DateTime
-    updated_at: DateTime
-    team_member_id: int
-
-
-class MeetingAttendee(MeetingAttendeeBase):
+class MeetingAttendee(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
-
-
-class MeetingAttendeeCreate(MeetingAttendeeBase):
+    created_at: DateTime
+    updated_at: DateTime
     meeting_id: int
     team_member_id: int
 
@@ -35,17 +27,16 @@ class MeetingBase(BaseModel):
 
 
 class Meeting(MeetingBase):
+    model_config = ConfigDict(from_attributes=True)
     id: int
     attendees: list[MeetingAttendee]
-
-    class Config:
-        orm_mode = True
-
-
-class MeetingCreate(MeetingBase):
-    meeting_timestamp: DateTime
 
 
 """
 team
 """
+
+
+class Team(BaseModel):
+    created_at: DateTime
+    updated_at: DateTime
