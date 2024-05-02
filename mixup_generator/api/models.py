@@ -1,22 +1,21 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Boolean, Column, DateTime, String
-from sqlmodel import TIMESTAMP, Field, Relationship, SQLModel, text
+from sqlalchemy import Boolean, Column, DateTime, String, func
+from sqlmodel import Field, SQLModel
 
 
 class TeamMember(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: Optional[datetime] = Field(
+        default=None,
         sa_column=Column(
-            TIMESTAMP(timezone=True),
-            nullable=False,
-            server_default=text("CURRENT_TIMESTAMP"),
-        )
+            DateTime(timezone=True), server_default=func.now(), nullable=True
+        ),
     )
     updated_at: Optional[datetime] = Field(
-        default_factory=datetime.utcnow,
-        sa_column_kwargs={"onupdate": datetime.utcnow},
+        default=None,
+        sa_column=Column(DateTime(timezone=True), onupdate=func.now(), nullable=True),
     )
     name: str = Field(String, unique=True, max_length=50)
     keycloak_user_id: str = Field(String, max_length=10, unique=True)
@@ -27,101 +26,83 @@ class TeamMember(SQLModel, table=True):
 class Team(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: Optional[datetime] = Field(
+        default=None,
         sa_column=Column(
-            TIMESTAMP(timezone=True),
-            nullable=False,
-            server_default=text("CURRENT_TIMESTAMP"),
-        )
+            DateTime(timezone=True), server_default=func.now(), nullable=True
+        ),
     )
     updated_at: Optional[datetime] = Field(
-        default_factory=datetime.utcnow,
-        sa_column_kwargs={"onupdate": datetime.utcnow},
+        default=None,
+        sa_column=Column(DateTime(timezone=True), onupdate=func.now(), nullable=True),
     )
     name: str = Field(String, unique=True, max_length=50)
     active: bool = Field(sa_column=Column(Boolean), default=True)
 
 
-class Meeting(SQLModel, table=True):
-    """
-    Represents a Mixup Meeting between two or more members
-    """
-
+class TeamTeamMembers(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    meeting_timestamp: DateTime = Field(DateTime(timezone=True))
     created_at: Optional[datetime] = Field(
+        default=None,
         sa_column=Column(
-            TIMESTAMP(timezone=True),
-            nullable=False,
-            server_default=text("CURRENT_TIMESTAMP"),
-        )
+            DateTime(timezone=True), server_default=func.now(), nullable=True
+        ),
     )
     updated_at: Optional[datetime] = Field(
-        default_factory=datetime.utcnow,
-        sa_column_kwargs={"onupdate": datetime.utcnow},
+        default=None,
+        sa_column=Column(DateTime(timezone=True), onupdate=func.now(), nullable=True),
     )
-
-    attendees: list[TeamMember] = Relationship(back_populates="team")
-    meeting_location_id: int = Field(foreign_key="meeting_location._id")
+    team_member_id: int = Field(foreign_key="teammember.id")
+    team_id: int = Field(foreign_key="team.id")
 
 
 class MeetingLocation(SQLModel, table=True):
-    """
-    Represents a meeting room
-    """
-
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: Optional[datetime] = Field(
+        default=None,
         sa_column=Column(
-            TIMESTAMP(timezone=True),
-            nullable=False,
-            server_default=text("CURRENT_TIMESTAMP"),
-        )
+            DateTime(timezone=True), server_default=func.now(), nullable=True
+        ),
     )
     updated_at: Optional[datetime] = Field(
-        default_factory=datetime.utcnow,
-        sa_column_kwargs={"onupdate": datetime.utcnow},
+        default=None,
+        sa_column=Column(DateTime(timezone=True), onupdate=func.now(), nullable=True),
     )
     name: str = Field(String, unique=True, max_length=50)
 
 
-class MeetingAttendee(SQLModel, table=True):
-    """
-    Each meeting can have a variable number of attendees and they are
-    linked to the meeting by the mixup_meeting id
-    """
-
+class Meeting(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
+    meeting_timestamp: datetime = Field(
+        sa_column=Column(DateTime(timezone=True), nullable=False)
+    )
     created_at: Optional[datetime] = Field(
+        default=None,
         sa_column=Column(
-            TIMESTAMP(timezone=True),
-            nullable=False,
-            server_default=text("CURRENT_TIMESTAMP"),
-        )
+            DateTime(timezone=True), server_default=func.now(), nullable=True
+        ),
     )
     updated_at: Optional[datetime] = Field(
-        default_factory=datetime.utcnow,
-        sa_column_kwargs={"onupdate": datetime.utcnow},
+        default=None,
+        sa_column=Column(DateTime(timezone=True), onupdate=func.now(), nullable=True),
+    )
+
+    # meeting_attendees: list[TeamMember] = Relationship(back_populates="meeting")
+    meeting_location_id: int = Field(foreign_key="meetinglocation.id")
+
+
+class MeetingAttendee(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    created_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(
+            DateTime(timezone=True), server_default=func.now(), nullable=True
+        ),
+    )
+    updated_at: Optional[datetime] = Field(
+        default=None,
+        sa_column=Column(DateTime(timezone=True), onupdate=func.now(), nullable=True),
     )
     meeting_id: int = Field(foreign_key="meeting.id")
-    team_member_id: int = Field(foreign_key="team_member.id")
-
-
-class TeamTeamMembers(SQLModel, table=True):
-    """
-    Represents team members belonging to one or more team
-    """
-
-    id: Optional[int] = Field(default=None, primary_key=True)
-    created_at: Optional[datetime] = Field(
-        sa_column=Column(
-            TIMESTAMP(timezone=True),
-            nullable=False,
-            server_default=text("CURRENT_TIMESTAMP"),
-        )
-    )
-    updated_at: Optional[datetime] = Field(
-        default_factory=datetime.utcnow,
-        sa_column_kwargs={"onupdate": datetime.utcnow},
-    )
-    team_member_id: int = Field(foreign_key="team_member.id")
-    team_id: int = Field(foreign_key="team.id")
+    team_member_id: int = Field(foreign_key="teammember.id")
+    # Links to meeting_attendees
+    # meeting: Meeting = Relationship(back_populates="meeting_attendees")
