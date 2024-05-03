@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from sqlmodel import Session, SQLModel, create_engine, select
 
-from mixup_generator.api.models import Team
+from mixup_generator.api.models import Team, TeamTeamMembersLink
 
 logging.basicConfig()
 logger = logging.getLogger("sqlalchemy.engine")
@@ -32,8 +32,16 @@ def create_teams():
 
 
 def select_teams():
+    return select_results(Team)
+
+
+def select_team_members():
+    return select_results(TeamTeamMembersLink)
+
+
+def select_results(from_class):
     with Session(engine) as session:
-        statement = select(Team)
+        statement = select(from_class)
         results = session.exec(statement)
         if results:
             return results.all()
@@ -44,3 +52,8 @@ def select_teams():
 @app.get("/teams")
 async def teams_list():
     return {"teams": select_teams()}
+
+
+@app.get("/team-members")
+async def team_members_list():
+    return {"team_members": select_team_members()}
