@@ -40,7 +40,7 @@ class TeamMember(SQLModel, table=True):
     can_attend_multiple_meetings: bool = Field(sa_column=Column(Boolean), default=True)
     """
     teams: list[Team] = Relationship(
-        back_populates="teammembers", link_model=TeamTeamMembersLink
+        back_populates="members", link_model=TeamTeamMembersLink
     )
     """
 

@@ -2,6 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from sqlalchemy import text
 from sqlmodel import Session, SQLModel, create_engine, select
 
 from mixup_generator.api.models import Team, TeamTeamMembersLink
@@ -25,28 +26,32 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-def create_teams():
-    with Session(engine) as session:
-        team = Team(name="Planet Express")
-        session.add(team)
-
-
 def select_teams():
-    return select_results(Team)
-
-
-def select_team_members():
-    return select_results(TeamTeamMembersLink)
-
-
-def select_results(from_class):
     with Session(engine) as session:
-        statement = select(from_class)
+        statement = select(Team).where(Team.active)
         results = session.exec(statement)
         if results:
             return results.all()
         else:
             return []
+
+
+def select_team_members():
+    with Session(engine) as session:
+        statement = (
+            select(TeamTeamMembersLink)
+            .where(Team.active)
+            .group_by(text("team_member_id"))
+        )
+
+        results = session.exec(statement)
+        if results:
+            return results.all()
+        else:
+            return []
+
+
+## Routes
 
 
 @app.get("/teams")
