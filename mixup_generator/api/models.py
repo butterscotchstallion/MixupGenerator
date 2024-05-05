@@ -27,7 +27,9 @@ class TeamMember(SQLModel, table=True):
     created_at: Optional[datetime] = Field(
         default=None,
         sa_column=Column(
-            DateTime(timezone=True), server_default=func.now(), nullable=True
+            DateTime(timezone=True),
+            server_default=func.now(),
+            nullable=True,
         ),
     )
     updated_at: Optional[datetime] = Field(

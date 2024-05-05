@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlmodel import Session, SQLModel, create_engine, select
 
-from mixup_generator.api.models import Team, TeamTeamMembersLink
+from mixup_generator.api.models import Team, TeamMember, TeamTeamMembersLink
 
 logging.basicConfig()
 logger = logging.getLogger("sqlalchemy.engine")
@@ -50,6 +50,16 @@ def select_teams():
 
 def select_team_members():
     with Session(engine) as session:
+        statement = select(TeamMember).where(TeamMember.active)
+        results = session.exec(statement)
+        if results:
+            return results.all()
+        else:
+            return []
+
+
+def select_team_member_team_link():
+    with Session(engine) as session:
         statement = (
             select(TeamTeamMembersLink)
             .where(Team.active)
@@ -67,10 +77,15 @@ def select_team_members():
 
 
 @app.get("/api/teams")
-async def teams_list():
+async def teams_route():
     return {"teams": select_teams()}
 
 
 @app.get("/api/team-members")
-async def team_members_list():
-    return {"team_members": select_team_members()}
+async def team_members_route():
+    return {"teams": select_team_members()}
+
+
+@app.get("/api/team-member-team-link")
+async def team_member_team_link_route():
+    return {"team_member_team_link": select_team_member_team_link()}
