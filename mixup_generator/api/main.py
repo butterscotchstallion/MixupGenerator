@@ -2,6 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlmodel import Session, SQLModel, create_engine, select
 
@@ -24,6 +25,17 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+origins = [
+    "http://localhost",
+    "http://localhost:5173",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 def select_teams():
@@ -54,11 +66,11 @@ def select_team_members():
 ## Routes
 
 
-@app.get("/teams")
+@app.get("/api/teams")
 async def teams_list():
     return {"teams": select_teams()}
 
 
-@app.get("/team-members")
+@app.get("/api/team-members")
 async def team_members_list():
     return {"team_members": select_team_members()}
