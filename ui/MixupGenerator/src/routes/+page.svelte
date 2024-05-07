@@ -115,47 +115,45 @@
 			<!-- Tab Panels --->
 			<svelte:fragment slot="panel">
 				{#if tabSet === 0}
-					<section class="p-4">
-						<div class="table-container">
-							<!-- Native Table Element -->
-							<table class="table table-hover">
-								<thead>
-									<tr>
-										<th>Teams</th>
-										<th>Members</th>
-									</tr>
-								</thead>
-								<tbody>
-									{#if teams$ === null}
-										<tr><td colspan="2"><div class="placeholder" /></td></tr>
-										<tr><td colspan="2"><div class="placeholder" /></td></tr>
-										<tr><td colspan="2"><div class="placeholder" /></td></tr>
-										<tr><td colspan="2"><div class="placeholder" /></td></tr>
-									{:else}
-										{#each $teams$ as team}
-											<tr>
-												<td>{team.name}</td>
-												<td>
-													{#if team?.members && team.members.length > 0}
-														<ul>
-															{#each team?.members as member}
-																<li class="p-1">
-																	<a
-																		class="anchor"
-																		href="#modal">{member.name}</a
-																	>
-																</li>
-															{/each}
-														</ul>
-													{/if}
-												</td>
-											</tr>
-										{/each}
-									{/if}
-								</tbody>
-							</table>
-						</div>
-					</section>
+					<div class="table-container">
+						<!-- Native Table Element -->
+						<table class="table table-hover">
+							<thead>
+								<tr>
+									<th>Teams</th>
+									<th>Members</th>
+								</tr>
+							</thead>
+							<tbody>
+								{#if teams$ === null}
+									<tr><td colspan="2"><div class="placeholder" /></td></tr>
+									<tr><td colspan="2"><div class="placeholder" /></td></tr>
+									<tr><td colspan="2"><div class="placeholder" /></td></tr>
+									<tr><td colspan="2"><div class="placeholder" /></td></tr>
+								{:else}
+									{#each $teams$ as team}
+										<tr>
+											<td>{team.name}</td>
+											<td>
+												{#if team?.members && team.members.length > 0}
+													<ul>
+														{#each team?.members as member}
+															<li class="p-1">
+																<a
+																	class="anchor"
+																	href="#modal">{member.name}</a
+																>
+															</li>
+														{/each}
+													</ul>
+												{/if}
+											</td>
+										</tr>
+									{/each}
+								{/if}
+							</tbody>
+						</table>
+					</div>
 				{:else if tabSet === 1}
 					Meetings
 				{/if}
