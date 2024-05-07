@@ -56,10 +56,12 @@
 
 				teamsResponse.forEach((team: ITeam) => {
 					const members: ITeamMember[] = teamIdToTeamMembersMap.get(team.id) || [];
-					members.sort((a, b) => a.name.localeCompare(b.name));
+					members.sort((a: ITeamMember, b: ITeamMember) => a.name.localeCompare(b.name));
 					team.members = members;
 					teams.push(team);
 				});
+
+				teams.sort((a: ITeam, b: ITeam) => a.name.localeCompare(b.name));
 
 				teams$.next(teams);
 			}),
@@ -119,7 +121,7 @@
 										{#if team?.members && team.members.length > 0}
 											<ul>
 												{#each team?.members as member}
-													<li>
+													<li class="p-1">
 														<a
 															class="anchor"
 															href="#modal">{member.name}</a
