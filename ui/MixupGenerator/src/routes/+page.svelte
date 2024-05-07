@@ -3,11 +3,13 @@
 	import type { ITeamMember } from '$lib/i-team-member';
 	import type { ITeamMemberLinkResponse } from '$lib/i-team-member-link-response';
 	import type { ITeamResponse } from '$lib/i-team-response';
+	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
 	import { BehaviorSubject, Subscription, forkJoin } from 'rxjs';
 	import { onDestroy, onMount } from 'svelte';
 
 	const teams$ = new BehaviorSubject<ITeam[]>([]);
 	const subscriptions = new Subscription();
+	let tabSet: number = 0;
 
 	async function parseTeamsData() {
 		subscriptions.add(
@@ -97,46 +99,67 @@
 			</h1>
 		</header>
 
-		<section class="p-4">
-			<div class="table-container">
-				<!-- Native Table Element -->
-				<table class="table table-hover">
-					<thead>
-						<tr>
-							<th>Teams</th>
-							<th>Members</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#if teams$ === null}
-							<tr><td colspan="2"><div class="placeholder" /></td></tr>
-							<tr><td colspan="2"><div class="placeholder" /></td></tr>
-							<tr><td colspan="2"><div class="placeholder" /></td></tr>
-							<tr><td colspan="2"><div class="placeholder" /></td></tr>
-						{:else}
-							{#each $teams$ as team}
-								<tr>
-									<td>{team.name}</td>
-									<td>
-										{#if team?.members && team.members.length > 0}
-											<ul>
-												{#each team?.members as member}
-													<li class="p-1">
-														<a
-															class="anchor"
-															href="#modal">{member.name}</a
-														>
-													</li>
-												{/each}
-											</ul>
-										{/if}
-									</td>
-								</tr>
-							{/each}
-						{/if}
-					</tbody>
-				</table>
-			</div>
-		</section>
+		<TabGroup>
+			<Tab
+				bind:group={tabSet}
+				name="tab1"
+				value={0}
+			>
+				<span>Teams</span>
+			</Tab>
+			<Tab
+				bind:group={tabSet}
+				name="tab2"
+				value={1}>Meetings</Tab
+			>
+			<!-- Tab Panels --->
+			<svelte:fragment slot="panel">
+				{#if tabSet === 0}
+					<section class="p-4">
+						<div class="table-container">
+							<!-- Native Table Element -->
+							<table class="table table-hover">
+								<thead>
+									<tr>
+										<th>Teams</th>
+										<th>Members</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#if teams$ === null}
+										<tr><td colspan="2"><div class="placeholder" /></td></tr>
+										<tr><td colspan="2"><div class="placeholder" /></td></tr>
+										<tr><td colspan="2"><div class="placeholder" /></td></tr>
+										<tr><td colspan="2"><div class="placeholder" /></td></tr>
+									{:else}
+										{#each $teams$ as team}
+											<tr>
+												<td>{team.name}</td>
+												<td>
+													{#if team?.members && team.members.length > 0}
+														<ul>
+															{#each team?.members as member}
+																<li class="p-1">
+																	<a
+																		class="anchor"
+																		href="#modal">{member.name}</a
+																	>
+																</li>
+															{/each}
+														</ul>
+													{/if}
+												</td>
+											</tr>
+										{/each}
+									{/if}
+								</tbody>
+							</table>
+						</div>
+					</section>
+				{:else if tabSet === 1}
+					Meetings
+				{/if}
+			</svelte:fragment>
+		</TabGroup>
 	</div>
 </div>
