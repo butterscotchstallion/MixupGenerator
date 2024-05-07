@@ -83,7 +83,7 @@ async def teams_route():
 
 @app.get("/api/team-members")
 async def team_members_route():
-    return {"teams": select_team_members()}
+    return {"team_members": select_team_members()}
 
 
 @app.get("/api/team-member-team-link")
