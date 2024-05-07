@@ -3,9 +3,12 @@
 	import type { ITeamMember } from '$lib/i-team-member';
 	import type { ITeamMemberLinkResponse } from '$lib/i-team-member-link-response';
 	import type { ITeamResponse } from '$lib/i-team-response';
-	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
+	import { Tab, TabGroup, popup } from '@skeletonlabs/skeleton';
 	import { BehaviorSubject, Subscription, forkJoin } from 'rxjs';
 	import { onDestroy, onMount } from 'svelte';
+	import { Icon } from 'svelte-icons-pack';
+	import { BsCalendar2Date, BsCalendarPlus, BsKey } from 'svelte-icons-pack/bs';
+	import Time from 'svelte-time';
 
 	const teams$ = new BehaviorSubject<ITeam[]>([]);
 	const subscriptions = new Subscription();
@@ -89,15 +92,13 @@
 
 <div class="container h-full mx-auto flex justify-center">
 	<div class="grid grid-flow-row auto-rows-max">
-		<header class="card-header">
-			<h1 class="h1">
-				<span
-					class="bg-gradient-to-br from-red-500 to-yellow-500 bg-clip-text text-transparent box-decoration-clone"
-				>
-					Mixup Generator
-				</span>
-			</h1>
-		</header>
+		<h1 class="h1 m-1">
+			<span
+				class="bg-gradient-to-br from-red-500 to-yellow-500 bg-clip-text text-transparent box-decoration-clone"
+			>
+				Mixup Generator
+			</span>
+		</h1>
 
 		<TabGroup>
 			<Tab
@@ -110,7 +111,12 @@
 			<Tab
 				bind:group={tabSet}
 				name="tab2"
-				value={1}>Meetings</Tab
+				value={1}>Mix Ups</Tab
+			>
+			<Tab
+				bind:group={tabSet}
+				name="tab3"
+				value={2}>Meetings</Tab
 			>
 			<!-- Tab Panels --->
 			<svelte:fragment slot="panel">
@@ -140,9 +146,73 @@
 														{#each team?.members as member}
 															<li class="p-1">
 																<a
-																	class="anchor"
-																	href="#modal">{member.name}</a
+																	class="anchor [&>*]:pointer-events-none"
+																	href="#modal"
+																	use:popup={{
+																		event: 'hover',
+																		target: 'popup-' + member.id,
+																		placement: 'top',
+																	}}>{member.name}</a
 																>
+																<div
+																	class="card p-4 variant-filled-secondary"
+																	data-popup="popup-{member.id}"
+																>
+																	<p>{member.name}</p>
+																	<table>
+																		<tbody>
+																			<tr>
+																				<td>
+																					<Icon
+																						className="icons"
+																						src={BsCalendar2Date}
+																					/>
+																					Created
+																				</td>
+																				<td
+																					>Created <Time
+																						relative
+																						timestamp={member.created_at}
+																					/></td
+																				>
+																			</tr>
+																			{#if member.updated_at}
+																				<tr>
+																					<td>
+																						<Icon
+																							className="icons"
+																							src={BsCalendar2Date}
+																						/>
+																						Updated
+																					</td>
+																					<td>{member.updated_at}</td>
+																				</tr>
+																			{/if}
+																			<tr>
+																				<td>
+																					<Icon
+																						className="icons"
+																						src={BsKey}
+																					/>
+																					KeyCloak ID
+																				</td>
+																				<td>{member.keycloak_user_id}</td>
+																			</tr>
+																			{#if member.can_attend_multiple_meetings}
+																				<tr>
+																					<td colspan="2">
+																						<Icon
+																							className="icons"
+																							src={BsCalendarPlus}
+																						/>
+																						Can attend multiple meetings
+																					</td>
+																				</tr>
+																			{/if}
+																		</tbody>
+																	</table>
+																	<div class="arrow variant-filled-secondary" />
+																</div>
 															</li>
 														{/each}
 													</ul>
@@ -155,9 +225,17 @@
 						</table>
 					</div>
 				{:else if tabSet === 1}
+					Mix ups
+				{:else if tabSet === 2}
 					Meetings
 				{/if}
 			</svelte:fragment>
 		</TabGroup>
 	</div>
 </div>
+
+<style>
+	:global(.icons) {
+		display: inline;
+	}
+</style>
