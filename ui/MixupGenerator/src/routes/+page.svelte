@@ -7,7 +7,15 @@
 	import { BehaviorSubject, Subscription, forkJoin } from 'rxjs';
 	import { onDestroy, onMount } from 'svelte';
 	import { Icon } from 'svelte-icons-pack';
-	import { BsCalendar2Date, BsCalendarPlus, BsKey } from 'svelte-icons-pack/bs';
+	import { BiShuffle } from 'svelte-icons-pack/bi';
+	import {
+		BsCalendar2Date,
+		BsCalendarDay,
+		BsCalendarPlus,
+		BsFilePerson,
+		BsKey,
+	} from 'svelte-icons-pack/bs';
+	import { RiUserFacesTeamLine } from 'svelte-icons-pack/ri';
 	import Time from 'svelte-time';
 
 	const teams$ = new BehaviorSubject<ITeam[]>([]);
@@ -106,18 +114,36 @@
 				name="tab1"
 				value={0}
 			>
-				<span>Teams</span>
+				<span>
+					<Icon
+						className="icons"
+						src={RiUserFacesTeamLine}
+					/>
+					Teams
+				</span>
 			</Tab>
 			<Tab
 				bind:group={tabSet}
 				name="tab2"
-				value={1}>Mix Ups</Tab
+				value={1}
 			>
+				<Icon
+					className="icons"
+					src={BiShuffle}
+				/>
+				Mix Ups
+			</Tab>
 			<Tab
 				bind:group={tabSet}
 				name="tab3"
-				value={2}>Meetings</Tab
+				value={2}
 			>
+				<Icon
+					className="icons"
+					src={BsCalendarDay}
+				/>
+				Meetings
+			</Tab>
 			<!-- Tab Panels --->
 			<svelte:fragment slot="panel">
 				{#if tabSet === 0}
@@ -139,7 +165,14 @@
 								{:else}
 									{#each $teams$ as team}
 										<tr>
-											<td>{team.name}</td>
+											<td>
+												{team.name}
+												{#if team?.members}
+													<p>
+														<small>{team.members.length} members</small>
+													</p>
+												{/if}
+											</td>
 											<td>
 												{#if team?.members && team.members.length > 0}
 													<ul>
@@ -155,12 +188,21 @@
 																	}}>{member.name}</a
 																>
 																<div
-																	class="card p-4 variant-filled-secondary"
+																	class="popup-card card p-2 variant-filled-tertiary"
 																	data-popup="popup-{member.id}"
 																>
-																	<p>{member.name}</p>
 																	<table>
 																		<tbody>
+																			<tr>
+																				<td>
+																					<Icon
+																						className="icons"
+																						src={BsFilePerson}
+																					/>
+																					Name
+																				</td>
+																				<td>{member.name}</td>
+																			</tr>
 																			<tr>
 																				<td>
 																					<Icon
@@ -237,5 +279,11 @@
 <style>
 	:global(.icons) {
 		display: inline;
+	}
+
+	.popup-card table tr {
+		&:last-child {
+			border-bottom: 0;
+		}
 	}
 </style>
