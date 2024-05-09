@@ -7,7 +7,6 @@
 	import { BehaviorSubject, Subscription, forkJoin } from 'rxjs';
 	import { onDestroy, onMount } from 'svelte';
 	import { Icon } from 'svelte-icons-pack';
-	import { BiShuffle } from 'svelte-icons-pack/bi';
 	import {
 		BsCalendar2Date,
 		BsCalendarDay,
@@ -20,6 +19,7 @@
 
 	const teams$ = new BehaviorSubject<ITeam[]>([]);
 	const subscriptions = new Subscription();
+	const teamMemberIdToTeamsMap: Map<number, ITeam[]> = new Map<number, ITeam[]>();
 	let tabSet: number = 0;
 
 	async function parseTeamsData() {
@@ -38,6 +38,8 @@
 					number,
 					ITeamMember
 				>();
+				const teamIdToTeamsMap: Map<number, ITeam> = new Map<number, ITeam>();
+				const teamMemberIdToTeamIdsMap: Map<number, number[]> = new Map<number, number[]>();
 
 				teamMembersResponse?.forEach((teamMember: ITeamMember) => {
 					teamMemberIdToTeamMembersMap.set(teamMember.id, teamMember);
@@ -54,8 +56,18 @@
 				 */
 				teamMembersLinksResponse.forEach((teamMembers: ITeamMemberLinkResponse) => {
 					const existingTeamMembers = teamIdToTeamMembersMap.get(teamMembers.team_id);
+					const existingTeamIds = teamMemberIdToTeamIdsMap.get(teamMembers.team_member_id);
 					const teamMember = teamMemberIdToTeamMembersMap.get(teamMembers.team_member_id);
+					let teamMemberTeamIds: number[] = [teamMembers.team_id];
 
+					// Handle team member id -> teams
+					if (existingTeamIds) {
+						teamMemberTeamIds = [...teamMemberTeamIds, teamMembers.team_id];
+					}
+
+					teamMemberIdToTeamIdsMap.set(teamMembers.team_member_id, teamMemberTeamIds);
+
+					// Handle team id -> team members
 					if (teamMember) {
 						let members: ITeamMember[] = [teamMember];
 
@@ -68,10 +80,32 @@
 				});
 
 				teamsResponse.forEach((team: ITeam) => {
-					const members: ITeamMember[] = teamIdToTeamMembersMap.get(team.id) || [];
+					let members: ITeamMember[] = teamIdToTeamMembersMap.get(team.id) || [];
 					members.sort((a: ITeamMember, b: ITeamMember) => a.name.localeCompare(b.name));
+					members = members.map((member: ITeamMember) => {
+						// This isn't working because the map is defined below
+						const teams = teamMemberIdToTeamsMap.get(member.id) || [];
+						const teamNames = teams.map((t: ITeam) => t.name);
+						member.teams = teams;
+						member.teamNames = teamNames.join(', ');
+						return member;
+					});
+
 					team.members = members;
 					teams.push(team);
+
+					teamIdToTeamsMap.set(team.id, team);
+				});
+
+				teamMemberIdToTeamIdsMap.forEach((teamIds: number[], teamMemberId: number) => {
+					const teams: ITeam[] = [];
+					teamIds.forEach((index: number, teamId: number) => {
+						const team: ITeam | undefined = teamIdToTeamsMap.get(teamId);
+						if (team) {
+							teams.push(team);
+						}
+					});
+					teamMemberIdToTeamsMap.set(teamMemberId, teams);
 				});
 
 				teams.sort((a: ITeam, b: ITeam) => a.name.localeCompare(b.name));
@@ -129,17 +163,6 @@
 			>
 				<Icon
 					className="icons"
-					src={BiShuffle}
-				/>
-				Mix Ups
-			</Tab>
-			<Tab
-				bind:group={tabSet}
-				name="tab3"
-				value={2}
-			>
-				<Icon
-					className="icons"
 					src={BsCalendarDay}
 				/>
 				Meetings
@@ -166,9 +189,15 @@
 									{#each $teams$ as team}
 										<tr>
 											<td>
-												{team.name}
+												<span class="badge variant-filled-surface">
+													<Icon
+														className="icons"
+														src={RiUserFacesTeamLine}
+													/>&nbsp;
+													{team.name}
+												</span>
 												{#if team?.members}
-													<p>
+													<p class="team-members-count">
 														<small>{team.members.length} members</small>
 													</p>
 												{/if}
@@ -202,6 +231,24 @@
 																					Name
 																				</td>
 																				<td>{member.name}</td>
+																			</tr>
+																			<tr>
+																				<td>
+																					<Icon
+																						className="icons"
+																						src={RiUserFacesTeamLine}
+																					/>
+																					Teams
+																				</td>
+																				<td>
+																					{#if member?.teams && member.teams.length > 0}
+																						{#each member.teams as team}
+																							<p>{team.name}</p>
+																						{/each}
+																					{:else}
+																						None
+																					{/if}
+																				</td>
 																			</tr>
 																			<tr>
 																				<td>
@@ -253,7 +300,7 @@
 																			{/if}
 																		</tbody>
 																	</table>
-																	<div class="arrow variant-filled-secondary" />
+																	<div class="arrow variant-filled-tertiary" />
 																</div>
 															</li>
 														{/each}
@@ -267,8 +314,6 @@
 						</table>
 					</div>
 				{:else if tabSet === 1}
-					Mix ups
-				{:else if tabSet === 2}
 					Meetings
 				{/if}
 			</svelte:fragment>
@@ -285,5 +330,9 @@
 		&:last-child {
 			border-bottom: 0;
 		}
+	}
+
+	.team-members-count {
+		padding-left: 0.25rem;
 	}
 </style>
