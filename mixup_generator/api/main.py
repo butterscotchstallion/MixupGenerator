@@ -1,6 +1,7 @@
 import logging
 from contextlib import asynccontextmanager
 
+import sqlalchemy
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
@@ -76,16 +77,39 @@ def select_team_member_team_link():
 ## Routes
 
 
+## Teams
 @app.get("/api/teams")
 async def teams_route():
     return {"teams": select_teams()}
 
 
+@app.post("/api/teams")
+async def teams_create_route(team: Team):
+    status = "ERROR"
+    message = None
+    try:
+        team_name = team.name.strip()
+        if team_name and len(team_name) > 0 and len(team_name) <= 50:
+            with Session(engine) as session:
+                session.add(Team(name=team_name))
+                session.commit()
+            status = "OK"
+            message = "Team created"
+        else:
+            message = "Invalid team name"
+    except sqlalchemy.exc.IntegrityError:
+        message = "Team name exists"
+
+    return {"status": status, "message": message}
+
+
+## Team Members
 @app.get("/api/team-members")
 async def team_members_route():
     return {"team_members": select_team_members()}
 
 
+## Team Member links
 @app.get("/api/team-member-team-link")
 async def team_member_team_link_route():
     return {"team_member_team_link": select_team_member_team_link()}

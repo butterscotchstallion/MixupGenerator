@@ -36,7 +36,7 @@ class TeamMember(SQLModel, table=True):
         default=None,
         sa_column=Column(DateTime(timezone=True), onupdate=func.now(), nullable=True),
     )
-    name: str = Field(String, unique=True, max_length=50)
+    name: str = Field(String, unique=True, min_length=1, max_length=50)
     keycloak_user_id: str = Field(String, max_length=10, unique=True)
     active: bool = Field(sa_column=Column(Boolean), default=True)
     can_attend_multiple_meetings: bool = Field(sa_column=Column(Boolean), default=True)
@@ -59,7 +59,7 @@ class Team(SQLModel, table=True):
         default=None,
         sa_column=Column(DateTime(timezone=True), onupdate=func.now(), nullable=True),
     )
-    name: str = Field(String, unique=True, max_length=50)
+    name: str = Field(String, unique=True, min_length=1, max_length=50)
     active: bool = Field(sa_column=Column(Boolean), default=True)
     """
     members: list[TeamMember] = Relationship(
@@ -80,7 +80,7 @@ class MeetingLocation(SQLModel, table=True):
         default=None,
         sa_column=Column(DateTime(timezone=True), onupdate=func.now(), nullable=True),
     )
-    name: str = Field(String, unique=True, max_length=50)
+    name: str = Field(String, unique=True, min_length=1, max_length=50)
 
 
 class Meeting(SQLModel, table=True):

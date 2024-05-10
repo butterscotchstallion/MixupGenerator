@@ -13,7 +13,7 @@
 	<Icon
 		className="icons"
 		src={BsCalendarPlus}
-	/>&nbsp;
+	/>
 {/if}
 <a
 	class="anchor [&>*]:pointer-events-none"

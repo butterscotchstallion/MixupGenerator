@@ -9,6 +9,7 @@
 	import { Icon } from 'svelte-icons-pack';
 	import { BsCalendarDay } from 'svelte-icons-pack/bs';
 	import { RiUserFacesTeamLine } from 'svelte-icons-pack/ri';
+	import MeetingsTab from './MeetingsTab.svelte';
 	import TeamMemberLink from './TeamMemberLink.svelte';
 
 	const teams$ = new BehaviorSubject<ITeam[]>([]);
@@ -165,7 +166,6 @@
 			<svelte:fragment slot="panel">
 				{#if tabSet === 0}
 					<div class="table-container">
-						<!-- Native Table Element -->
 						<table class="table table-hover">
 							<thead>
 								<tr>
@@ -214,7 +214,7 @@
 						</table>
 					</div>
 				{:else if tabSet === 1}
-					Meetings
+					<MeetingsTab />
 				{/if}
 			</svelte:fragment>
 		</TabGroup>
