@@ -3,19 +3,13 @@
 	import type { ITeamMember } from '$lib/i-team-member';
 	import type { ITeamMemberLinkResponse } from '$lib/i-team-member-link-response';
 	import type { ITeamResponse } from '$lib/i-team-response';
-	import { Tab, TabGroup, popup } from '@skeletonlabs/skeleton';
+	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
 	import { BehaviorSubject, Subscription, forkJoin } from 'rxjs';
 	import { onDestroy, onMount } from 'svelte';
 	import { Icon } from 'svelte-icons-pack';
-	import {
-		BsCalendar2Date,
-		BsCalendarDay,
-		BsCalendarPlus,
-		BsFilePerson,
-		BsKey,
-	} from 'svelte-icons-pack/bs';
+	import { BsCalendarDay } from 'svelte-icons-pack/bs';
 	import { RiUserFacesTeamLine } from 'svelte-icons-pack/ri';
-	import Time from 'svelte-time';
+	import TeamMemberLink from './TeamMemberLink.svelte';
 
 	const teams$ = new BehaviorSubject<ITeam[]>([]);
 	const subscriptions = new Subscription();
@@ -207,101 +201,7 @@
 													<ul>
 														{#each team?.members as member}
 															<li class="p-1">
-																<a
-																	class="anchor [&>*]:pointer-events-none"
-																	href="#modal"
-																	use:popup={{
-																		event: 'hover',
-																		target: 'popup-' + member.id,
-																		placement: 'top',
-																	}}>{member.name}</a
-																>
-																<div
-																	class="popup-card card p-2 variant-filled-tertiary"
-																	data-popup="popup-{member.id}"
-																>
-																	<table>
-																		<tbody>
-																			<tr>
-																				<td>
-																					<Icon
-																						className="icons"
-																						src={BsFilePerson}
-																					/>
-																					Name
-																				</td>
-																				<td>{member.name}</td>
-																			</tr>
-																			<tr>
-																				<td>
-																					<Icon
-																						className="icons"
-																						src={RiUserFacesTeamLine}
-																					/>
-																					Teams
-																				</td>
-																				<td>
-																					{#if member?.teams && member.teams.length > 0}
-																						{#each member.teams as team}
-																							<p>{team.name}</p>
-																						{/each}
-																					{:else}
-																						None
-																					{/if}
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>
-																					<Icon
-																						className="icons"
-																						src={BsCalendar2Date}
-																					/>
-																					Created
-																				</td>
-																				<td
-																					>Created <Time
-																						relative
-																						timestamp={member.created_at}
-																					/></td
-																				>
-																			</tr>
-																			{#if member.updated_at}
-																				<tr>
-																					<td>
-																						<Icon
-																							className="icons"
-																							src={BsCalendar2Date}
-																						/>
-																						Updated
-																					</td>
-																					<td>{member.updated_at}</td>
-																				</tr>
-																			{/if}
-																			<tr>
-																				<td>
-																					<Icon
-																						className="icons"
-																						src={BsKey}
-																					/>
-																					KeyCloak ID
-																				</td>
-																				<td>{member.keycloak_user_id}</td>
-																			</tr>
-																			{#if member.can_attend_multiple_meetings}
-																				<tr>
-																					<td colspan="2">
-																						<Icon
-																							className="icons"
-																							src={BsCalendarPlus}
-																						/>
-																						Can attend multiple meetings
-																					</td>
-																				</tr>
-																			{/if}
-																		</tbody>
-																	</table>
-																	<div class="arrow variant-filled-tertiary" />
-																</div>
+																<TeamMemberLink teamMember={member} />
 															</li>
 														{/each}
 													</ul>
@@ -324,12 +224,6 @@
 <style>
 	:global(.icons) {
 		display: inline;
-	}
-
-	.popup-card table tr {
-		&:last-child {
-			border-bottom: 0;
-		}
 	}
 
 	.team-members-count {
