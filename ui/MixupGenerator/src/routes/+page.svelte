@@ -3,7 +3,7 @@
 	import type { ITeamMember } from '$lib/i-team-member';
 	import type { ITeamMemberLinkResponse } from '$lib/i-team-member-link-response';
 	import type { ITeamResponse } from '$lib/i-team-response';
-	import { Tab, TabGroup, getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
 	import { BehaviorSubject, Subscription, forkJoin } from 'rxjs';
 	import { onDestroy, onMount } from 'svelte';
 	import { Icon } from 'svelte-icons-pack';
@@ -127,18 +127,6 @@
 		]);
 	}
 
-	function showAlertModal() {
-		const modalStore = getModalStore();
-		const modal: ModalSettings = {
-			type: 'alert',
-			// Data
-			title: 'Example Alert',
-			body: 'This is an example modal.',
-			image: 'https://i.imgur.com/WOgTG96.gif',
-		};
-		modalStore.trigger(modal);
-	}
-
 	onDestroy(() => {
 		subscriptions.unsubscribe();
 	});
@@ -199,8 +187,4 @@
 	</div>
 </div>
 
-<style>
-	:global(.icons) {
-		display: inline;
-	}
-</style>
+
