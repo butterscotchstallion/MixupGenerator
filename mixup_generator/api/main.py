@@ -2,7 +2,7 @@ import logging
 from contextlib import asynccontextmanager
 
 import sqlalchemy
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 from sqlmodel import Session, SQLModel, create_engine, select
@@ -95,10 +95,8 @@ async def teams_create_route(team: Team):
                 session.commit()
             status = "OK"
             message = "Team created"
-        else:
-            message = "Invalid team name"
     except sqlalchemy.exc.IntegrityError:
-        message = "Team name exists"
+        raise HTTPException(status_code=400, detail="Team name exists")
 
     return {"status": status, "message": message}
 

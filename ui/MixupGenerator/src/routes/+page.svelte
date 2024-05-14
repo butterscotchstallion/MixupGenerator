@@ -1,10 +1,12 @@
 <script lang="ts">
+	import api from '$lib/api';
 	import type { ITeam } from '$lib/i-team';
 	import type { ITeamMember } from '$lib/i-team-member';
 	import type { ITeamMemberLinkResponse } from '$lib/i-team-member-link-response';
 	import type { ITeamResponse } from '$lib/i-team-response';
 	import { Tab, TabGroup } from '@skeletonlabs/skeleton';
-	import { BehaviorSubject, Subscription, forkJoin } from 'rxjs';
+	import { type AxiosResponse } from 'axios';
+	import { BehaviorSubject, Subscription } from 'rxjs';
 	import { onDestroy, onMount } from 'svelte';
 	import { Icon } from 'svelte-icons-pack';
 	import { BsCalendarDay } from 'svelte-icons-pack/bs';
@@ -19,13 +21,12 @@
 	let teamsResponseError: any = null;
 	let loading = true;
 
-	async function handleTeamsResponse(responses: Response[]) {
+	async function handleTeamsResponse(response: AxiosResponse[]) {
 		let teams: ITeam[] = [];
-		const teamMembersResponse: ITeamMember[] = JSON.parse(await responses[2].text()).team_members;
-		const teamsResponse: ITeamResponse[] = JSON.parse(await responses[0].text()).teams;
-		const teamMembersLinksResponse: ITeamMemberLinkResponse[] = JSON.parse(
-			await responses[1].text(),
-		).team_member_team_link;
+		const teamMembersResponse: ITeamMember[] = response[2].data.team_members;
+		const teamsResponse: ITeamResponse[] = response[0].data.teams;
+		const teamMembersLinksResponse: ITeamMemberLinkResponse[] =
+			response[1].data.team_member_team_link;
 		const teamIdToTeamMembersMap: Map<number, ITeamMember[]> = new Map<number, ITeamMember[]>();
 		const teamMemberIdToTeamMembersMap: Map<number, ITeamMember> = new Map<number, ITeamMember>();
 		const teamIdToTeamsMap: Map<number, ITeam> = new Map<number, ITeam>();
@@ -99,7 +100,6 @@
 			teamMemberIdToTeamsMap.set(teamMemberId, teams);
 		});
 
-		teams = teams.filter((team: ITeam) => team?.members && team.members.length > 0);
 		teams.sort((a: ITeam, b: ITeam) => a.name.localeCompare(b.name));
 
 		teams$.next(teams);
@@ -112,19 +112,11 @@
 
 	async function parseTeamsData() {
 		subscriptions.add(
-			getTeamsData$().subscribe({
+			api.getTeamsData$().subscribe({
 				next: handleTeamsResponse,
 				error: handleError,
 			}),
 		);
-	}
-
-	function getTeamsData$() {
-		return forkJoin([
-			fetch('http://127.0.0.1:8001/api/teams'),
-			fetch('http://127.0.0.1:8001/api/team-member-team-link'),
-			fetch('http://127.0.0.1:8001/api/team-members'),
-		]);
 	}
 
 	onDestroy(() => {
@@ -186,5 +178,3 @@
 		</TabGroup>
 	</div>
 </div>
-
-

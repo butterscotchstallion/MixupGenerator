@@ -26,6 +26,12 @@
 
 			<footer class="modal-footer">
 				<div class="button-wrapper">
+					<button
+						class="btn btn-sm variant-ghost-surface"
+						on:click={() => {
+							dialog.close();
+						}}>Cancel</button
+					>
 					<slot name="footer" />
 				</div>
 			</footer>
@@ -37,6 +43,13 @@
 	.button-wrapper {
 		display: flex;
 		justify-content: right;
+
+		button {
+			margin-right: 1rem;
+			&:last-child {
+				margin: 0;
+			}
+		}
 	}
 
 	dialog {
