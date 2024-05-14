@@ -26,6 +26,16 @@
 		showModal = !showModal;
 	}
 
+	function openModal() {
+		showModal = true;
+		clearMessages();
+	}
+
+	function closeModal() {
+		showModal = false;
+		clearMessages();
+	}
+
 	function clearMessages() {
 		addTeamError = '';
 		addTeamSuccess = false;
@@ -35,7 +45,7 @@
 		};
 	}
 
-	function onFormSubmit() {
+	function onFormSubmit(event: any) {
 		api.addTeam$(teamFormData.name).then(
 			(response: AxiosResponse) => {
 				addTeamSuccess = true;
@@ -67,7 +77,7 @@
 		<button
 			type="button"
 			class="btn btn-sm variant-filled"
-			on:click={() => toggleModal()}
+			on:click={() => openModal()}
 		>
 			<span
 				><Icon
@@ -138,7 +148,10 @@
 				message="There was a problem adding the team: {addTeamError}"
 			/>
 		{/if}
-		<form method="post">
+		<form
+			method="post"
+			on:submit|preventDefault={onFormSubmit}
+		>
 			<label
 				class="label"
 				for="team-name"
@@ -157,9 +170,9 @@
 	</div>
 	<div slot="footer">
 		<button
+			type="submit"
 			disabled={isAddingTeam || teamFormData.name.trim().length === 0}
 			class="btn btn-sm variant-filled"
-			on:click={onFormSubmit}
 		>
 			<Icon
 				className="icons"
